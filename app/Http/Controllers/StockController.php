@@ -13,9 +13,36 @@ class StockController extends Controller
     public function index()
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'sku' => 'P001',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'tipo' => 'Display',
+                'quantidade' => 5,
+                'preco' => 350.00,
+                'fornecedor' => 'Fornecedor A'
+            ],
+            (object)[
+                'id' => 2,
+                'sku' => 'P002',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'tipo' => 'Teclado',
+                'quantidade' => 10,
+                'preco' => 120.00,
+                'fornecedor' => 'Fornecedor B'
+            ],
+            (object)[
+                'id' => 3,
+                'sku' => 'P003',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'tipo' => 'Fonte',
+                'quantidade' => 3,
+                'preco' => 200.00,
+                'fornecedor' => 'Fornecedor C'
+            ],
         ]);
 
         $page         = request()->get('page', 1);
@@ -23,7 +50,7 @@ class StockController extends Controller
         $total        = $items->count();
         $currentItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
 
-        $clients = new LengthAwarePaginator(
+        $stocks = new LengthAwarePaginator(
             $currentItems,
             $total,
             $perPage,
@@ -31,7 +58,7 @@ class StockController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('stock.index', compact('clients'));
+        return view('stock.index', compact('stocks'));
     }
 
     /**
@@ -39,7 +66,7 @@ class StockController extends Controller
      */
     public function create()
     {
-        return view('stock.edit', ['client' => null]);
+        return view('stock.edit', ['stock' => null]);
     }
 
     /**
@@ -47,8 +74,9 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
+        // Aqui você faria a validação e salvaria no banco de dados
         return redirect()->route('stock.index')
-            ->with('success', 'Cliente criado com sucesso!');
+            ->with('success', 'Peça cadastrada com sucesso!');
     }
 
     /**
@@ -57,18 +85,45 @@ class StockController extends Controller
     public function show(string $id)
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'sku' => 'P001',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'tipo' => 'Display',
+                'quantidade' => 5,
+                'preco' => 350.00,
+                'fornecedor' => 'Fornecedor A'
+            ],
+            (object)[
+                'id' => 2,
+                'sku' => 'P002',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'tipo' => 'Teclado',
+                'quantidade' => 10,
+                'preco' => 120.00,
+                'fornecedor' => 'Fornecedor B'
+            ],
+            (object)[
+                'id' => 3,
+                'sku' => 'P003',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'tipo' => 'Fonte',
+                'quantidade' => 3,
+                'preco' => 200.00,
+                'fornecedor' => 'Fornecedor C'
+            ],
         ]);
 
-        $client = $items->firstWhere('id', (int) $id);
+        $stock = $items->firstWhere('id', (int) $id);
 
-        if (!$client) {
-            abort(404, 'Cliente não encontrado.');
+        if (!$stock) {
+            abort(404, 'Peça não encontrada.');
         }
 
-        return view('stock.show', compact('client'));
+        return view('stock.show', compact('stock'));
     }
 
     /**
@@ -77,18 +132,45 @@ class StockController extends Controller
     public function edit(string $id)
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'sku' => 'P001',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'tipo' => 'Display',
+                'quantidade' => 5,
+                'preco' => 350.00,
+                'fornecedor' => 'Fornecedor A'
+            ],
+            (object)[
+                'id' => 2,
+                'sku' => 'P002',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'tipo' => 'Teclado',
+                'quantidade' => 10,
+                'preco' => 120.00,
+                'fornecedor' => 'Fornecedor B'
+            ],
+            (object)[
+                'id' => 3,
+                'sku' => 'P003',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'tipo' => 'Fonte',
+                'quantidade' => 3,
+                'preco' => 200.00,
+                'fornecedor' => 'Fornecedor C'
+            ],
         ]);
 
-        $client = $items->firstWhere('id', (int) $id);
+        $stock = $items->firstWhere('id', (int) $id);
 
-        if (!$client) {
-            abort(404, 'Cliente não encontrado.');
+        if (!$stock) {
+            abort(404, 'Peça não encontrada.');
         }
 
-        return view('stock.edit', compact('client'));
+        return view('stock.edit', compact('stock'));
     }
 
     /**
@@ -96,8 +178,9 @@ class StockController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Aqui você faria a validação e atualização no banco de dados
         return redirect()->route('stock.index')
-            ->with('success', 'Cliente atualizado com sucesso!');
+            ->with('success', 'Peça atualizada com sucesso!');
     }
 
     /**
@@ -105,7 +188,8 @@ class StockController extends Controller
      */
     public function destroy(string $id)
     {
+        // Aqui você faria a exclusão no banco de dados
         return redirect()->route('stock.index')
-            ->with('success', 'Cliente excluido com sucesso!');
+            ->with('success', 'Peça excluída com sucesso!');
     }
 }

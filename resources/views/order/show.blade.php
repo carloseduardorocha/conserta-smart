@@ -1,10 +1,10 @@
-<x-app-layout :title="'Visualizar Cliente'">
+<x-app-layout :title="'Visualizar Ordem de Serviço'">
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Cliente - ' . $client->name) }}
+                {{ __('Ordem de Serviço - ' . $orderservice->nome) }}
             </h2>
-            <a href="{{ route('clients.index') }}"
+            <a href="{{ route('orders.index') }}"
                 class="inline-flex justify-center rounded-md border border-gray-300
                     px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100
                     focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-700">
@@ -20,31 +20,39 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Nome
                 </label>
-                <p class="mt-1 text-base">{{ $client->name }}</p>
+                <p class="mt-1 text-base">{{ $orderservice->nome }}</p>
             </div>
 
-            <!-- Email -->
+            <!-- SKU da Ordem de Serviço -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email
+                    SKU da Ordem de Serviço
                 </label>
-                <p class="mt-1 text-base">{{ $client->email }}</p>
+                <p class="mt-1 text-base">{{ $orderservice->sku }}</p>
             </div>
 
-            <!-- Telefone -->
+            <!-- Marca -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Telefone
+                    Marca
                 </label>
-                <p class="mt-1 text-base">{{ $client->phone }}</p>
+                <p class="mt-1 text-base">{{ $orderservice->marca }}</p>
             </div>
 
-            <!-- CPF -->
+            <!-- Modelo -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    CPF
+                    Modelo
                 </label>
-                <p class="mt-1 text-base">{{ $client->cpf }}</p>
+                <p class="mt-1 text-base">{{ $orderservice->modelo }}</p>
+            </div>
+
+            <!-- Orçamento Prévio -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Orçamento Prévio
+                </label>
+                <p class="mt-1 text-base">R$ {{ number_format($orderservice->orcamento_previo, 2, ',', '.') }}</p>
             </div>
         </div>
     </div>

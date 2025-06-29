@@ -1,15 +1,15 @@
-<x-app-layout title="Listagem de Clientes">
+<x-app-layout title="Listagem de Estoque">
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Listagem de Clientes') }}
+                {{ __('Listagem de Estoque') }}
             </h2>
 
-            <a href="{{ route('clients.create') }}"
+            <a href="{{ route('stock.create') }}"
                class="inline-flex justify-center rounded-md border border-gray-300
                       px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100
                       focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-700">
-                Novo Cliente
+                Nova Peça
             </a>
         </div>
     </x-slot>
@@ -18,38 +18,31 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
 
-                {{-- @if (session('success'))
-                    <div id="alert-success" 
-                        class="mb-4 rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700 dark:bg-green-900 dark:text-green-300" 
-                        role="alert">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div id="alert-error"
-                        class="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700 dark:bg-red-900 dark:text-red-300"
-                        role="alert">
-                        {{ session('error') }}
-                    </div>
-                @endif --}}
-
                 {{-- Tabela --}}
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-100 dark:bg-gray-700" style="text-align: left">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Nome
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    SKU da Peça
                                 </th>
                                 <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Email
+                                    Marca
                                 </th>
                                 <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Telefone
+                                    Modelo
                                 </th>
                                 <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    CPF
+                                    Tipo
+                                </th>
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Quantidade
+                                </th>
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Preço
+                                </th>
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Fornecedor
                                 </th>
                                 <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Ações
@@ -57,23 +50,32 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse ($clients as $client)
+                            @forelse ($stocks as $stock)
                                 <tr>
                                     <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $client->name }}
+                                        {{ $stock->sku }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $client->email }}
+                                        {{ $stock->marca }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $client->phone }}
+                                        {{ $stock->modelo }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $client->cpf }}
+                                        {{ $stock->tipo }}
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                        {{ $stock->quantidade }}
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                        R$ {{ number_format($stock->preco, 2, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                        {{ $stock->fornecedor }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-center space-x-2">
 
-                                        <a href="{{ route('clients.show', $client->id) }}" title="Visualizar"
+                                        <a href="{{ route('stock.show', $stock->id) }}" title="Visualizar"
                                            class="inline-flex items-center p-1 text-blue-500 hover:text-blue-700">
                                             {{-- Ícone Visualizar --}}
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -85,7 +87,7 @@
                                             </svg>
                                         </a>
 
-                                        <a href="{{ route('clients.edit', $client->id) }}" title="Editar"
+                                        <a href="{{ route('stock.edit', $stock->id) }}" title="Editar"
                                            class="inline-flex items-center p-1 text-yellow-500 hover:text-yellow-700">
                                             {{-- Ícone Editar --}}
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -96,7 +98,7 @@
                                         </a>
 
                                         {{-- Form de exclusão --}}
-                                        <form method="POST" action="{{ route('clients.destroy', $client->id) }}" class="inline delete-form">
+                                        <form method="POST" action="{{ route('stock.destroy', $stock->id) }}" class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Excluir"
@@ -113,8 +115,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
-                                        Nenhum cliente encontrado.
+                                    <td colspan="8" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
+                                        Nenhuma peça encontrada no estoque.
                                     </td>
                                 </tr>
                             @endforelse
@@ -123,7 +125,7 @@
                 </div>
 
                 <div class="mt-4">
-                    {{ $clients->links() }}
+                    {{ $stocks->links() }}
                 </div>
             </div>
         </div>

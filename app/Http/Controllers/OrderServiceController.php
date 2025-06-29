@@ -13,9 +13,30 @@ class OrderServiceController extends Controller
     public function index()
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'nome' => 'Carlos Rocha', // Nome do cliente
+                'sku' => '01',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'orcamento_previo' => 350.00
+            ],
+            (object)[
+                'id' => 2,
+                'nome' => 'Ana Silva', // Nome do cliente
+                'sku' => '02',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'orcamento_previo' => 500.00
+            ],
+            (object)[
+                'id' => 3,
+                'nome' => 'João Souza', // Nome do cliente
+                'sku' => '03',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'orcamento_previo' => 120.00
+            ],
         ]);
 
         $page         = request()->get('page', 1);
@@ -23,7 +44,7 @@ class OrderServiceController extends Controller
         $total        = $items->count();
         $currentItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
 
-        $clients = new LengthAwarePaginator(
+        $orderservices = new LengthAwarePaginator(
             $currentItems,
             $total,
             $perPage,
@@ -31,7 +52,7 @@ class OrderServiceController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('order.index', compact('clients'));
+        return view('order.index', compact('orderservices'));
     }
 
     /**
@@ -39,7 +60,7 @@ class OrderServiceController extends Controller
      */
     public function create()
     {
-        return view('order.edit', ['client' => null]);
+        return view('order.edit', ['orderservice' => null]);
     }
 
     /**
@@ -47,8 +68,9 @@ class OrderServiceController extends Controller
      */
     public function store(Request $request)
     {
+        // Aqui você faria a validação e salvaria no banco de dados
         return redirect()->route('orders.index')
-            ->with('success', 'Cliente criado com sucesso!');
+            ->with('success', 'Ordem de serviço criada com sucesso!');
     }
 
     /**
@@ -57,18 +79,39 @@ class OrderServiceController extends Controller
     public function show(string $id)
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'nome' => 'Carlos Rocha',
+                'sku' => '01',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'orcamento_previo' => 350.00
+            ],
+            (object)[
+                'id' => 2,
+                'nome' => 'Ana Silva',
+                'sku' => '02',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'orcamento_previo' => 500.00
+            ],
+            (object)[
+                'id' => 3,
+                'nome' => 'João Souza',
+                'sku' => '03',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'orcamento_previo' => 120.00
+            ],
         ]);
 
-        $client = $items->firstWhere('id', (int) $id);
+        $orderservice = $items->firstWhere('id', (int) $id);
 
-        if (!$client) {
-            abort(404, 'Cliente não encontrado.');
+        if (!$orderservice) {
+            abort(404, 'Ordem de serviço não encontrada.');
         }
 
-        return view('order.show', compact('client'));
+        return view('order.show', compact('orderservice'));
     }
 
     /**
@@ -77,18 +120,39 @@ class OrderServiceController extends Controller
     public function edit(string $id)
     {
         $items = collect([
-            (object)['id' => 1, 'name' => 'Carlos Rocha', 'email' => 'carlos@example.com', 'phone' => '123456789', 'cpf' => '03749824061'],
-            (object)['id' => 2, 'name' => 'Ana Silva', 'email' => 'ana@example.com', 'phone' => '987654321', 'cpf' => '03749824061'],
-            (object)['id' => 3, 'name' => 'João Souza', 'email' => 'joao@example.com', 'phone' => '456789123', 'cpf' => '03749824061'],
+            (object)[
+                'id' => 1,
+                'nome' => 'Carlos Rocha',
+                'sku' => '01',
+                'marca' => 'Dell',
+                'modelo' => 'Inspiron 15',
+                'orcamento_previo' => 350.00
+            ],
+            (object)[
+                'id' => 2,
+                'nome' => 'Ana Silva',
+                'sku' => '02',
+                'marca' => 'Samsung',
+                'modelo' => 'Galaxy S20',
+                'orcamento_previo' => 500.00
+            ],
+            (object)[
+                'id' => 3,
+                'nome' => 'João Souza',
+                'sku' => '03',
+                'marca' => 'HP',
+                'modelo' => 'Pavilion',
+                'orcamento_previo' => 120.00
+            ],
         ]);
 
-        $client = $items->firstWhere('id', (int) $id);
+        $orderservice = $items->firstWhere('id', (int) $id);
 
-        if (!$client) {
-            abort(404, 'Cliente não encontrado.');
+        if (!$orderservice) {
+            abort(404, 'Ordem de serviço não encontrada.');
         }
 
-        return view('order.edit', compact('client'));
+        return view('order.edit', compact('orderservice'));
     }
 
     /**
@@ -96,8 +160,9 @@ class OrderServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Aqui você faria a validação e atualização no banco de dados
         return redirect()->route('orders.index')
-            ->with('success', 'Cliente atualizado com sucesso!');
+            ->with('success', 'Ordem de serviço atualizada com sucesso!');
     }
 
     /**
@@ -105,7 +170,8 @@ class OrderServiceController extends Controller
      */
     public function destroy(string $id)
     {
+        // Aqui você faria a exclusão no banco de dados
         return redirect()->route('orders.index')
-            ->with('success', 'Cliente excluido com sucesso!');
+            ->with('success', 'Ordem de serviço excluída com sucesso!');
     }
 }
