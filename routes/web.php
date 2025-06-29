@@ -37,13 +37,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('clients', ClientController::class);
-    Route::resource('stock', StockController::class);
     Route::resource('orders', OrderServiceController::class);
 
-    Route::resource('admin', AdminController::class)->except(['create', 'store']);
-
-    Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/', [ReportController::class, 'index'])->name('index');
+    Route::middleware('admin')->group(function () {
+        Route::resource('admin', AdminController::class)->except(['create', 'store']);
+        Route::resource('stock', StockController::class);
+        
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+        });
     });
 });
 
