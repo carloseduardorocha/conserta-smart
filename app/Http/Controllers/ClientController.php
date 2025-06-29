@@ -9,6 +9,7 @@ class ClientController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * localhost:8000/clients
      */
     public function index()
     {
@@ -36,6 +37,7 @@ class ClientController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * localhost:8000/clients/create (GET)
      */
     public function create()
     {
@@ -44,6 +46,7 @@ class ClientController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * localhost:8000/clients (POST)
      */
     public function store(Request $request)
     {
@@ -53,6 +56,7 @@ class ClientController extends Controller
 
     /**
      * Display the specified resource.
+     * localhost:8000/clients/1 (GET)
      */
     public function show(string $id)
     {
@@ -73,6 +77,7 @@ class ClientController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * localhost:8000/clients/1/edit (GET)
      */
     public function edit(string $id)
     {
@@ -93,6 +98,7 @@ class ClientController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * localhost:8000/clients/1/edit (PUT)
      */
     public function update(Request $request, string $id)
     {
@@ -102,6 +108,7 @@ class ClientController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * localhost:8000/clients/1 (DELETE)
      */
     public function destroy(string $id)
     {
