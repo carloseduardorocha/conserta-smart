@@ -2,175 +2,167 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\{OrderService, Client, User, StockItem};
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class OrderServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $items = collect([
-            (object)[
-                'id' => 1,
-                'nome' => 'Carlos Rocha', // Nome do cliente
-                'sku' => '01',
-                'marca' => 'Dell',
-                'modelo' => 'Inspiron 15',
-                'orcamento_previo' => 350.00
-            ],
-            (object)[
-                'id' => 2,
-                'nome' => 'Ana Silva', // Nome do cliente
-                'sku' => '02',
-                'marca' => 'Samsung',
-                'modelo' => 'Galaxy S20',
-                'orcamento_previo' => 500.00
-            ],
-            (object)[
-                'id' => 3,
-                'nome' => 'João Souza', // Nome do cliente
-                'sku' => '03',
-                'marca' => 'HP',
-                'modelo' => 'Pavilion',
-                'orcamento_previo' => 120.00
-            ],
-        ]);
-
-        $page         = request()->get('page', 1);
-        $perPage      = 10;
-        $total        = $items->count();
-        $currentItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
-
-        $orderservices = new LengthAwarePaginator(
-            $currentItems,
-            $total,
-            $perPage,
-            $page,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
-
-        return view('order.index', compact('orderservices'));
+        $orders = OrderService::with(['client', 'user', 'stockItems'])->latest()->paginate(10);
+        return view('order.index', compact('orders'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('order.edit', ['orderservice' => null]);
+        $clients = Client::all();
+        $users = User::all();
+        $stockItems = StockItem::where('quantity', '>', 0)->get();
+
+        return view('order.edit', [
+            'order' => null,
+            'clients' => $clients,
+            'users' => $users,
+            'stockItems' => $stockItems,
+            'selectedItems' => [],
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Aqui você faria a validação e salvaria no banco de dados
+        $validated = $request->validate([
+            'client_id'   => 'required|exists:clients,id',
+            'user_id'     => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'status'      => 'required|in:pending,in_progress,approved,rejected,cancelled,completed',
+            'stock_items' => 'array',
+            'stock_items.*' => 'integer|exists:stock_items,id',
+            'quantities' => 'array',
+            'quantities.*' => 'integer|min:1',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            $order = OrderService::create([
+                'client_id'   => $validated['client_id'],
+                'user_id'     => $validated['user_id'],
+                'description' => $validated['description'] ?? '',
+                'status'      => $validated['status'],
+            ]);
+
+            $items_to_attach = [];
+
+            foreach ($validated['stock_items'] ?? [] as $stock_item_id) {
+                $quantity = $validated['quantities'][$stock_item_id] ?? 1;
+                $stock = StockItem::findOrFail($stock_item_id);
+
+                if ($stock->quantity < $quantity) {
+                    throw new Exception("Estoque insuficiente para o produto: {$stock->name}");
+                }
+
+                $items_to_attach[$stock_item_id] = ['quantity' => $quantity];
+                $stock->decrement('quantity', $quantity);
+            }
+
+            if (!empty($items_to_attach)) {
+                $order->stockItems()->attach($items_to_attach);
+            }
+        });
+
         return redirect()->route('orders.index')
             ->with('success', 'Ordem de serviço criada com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $items = collect([
-            (object)[
-                'id' => 1,
-                'nome' => 'Carlos Rocha',
-                'sku' => '01',
-                'marca' => 'Dell',
-                'modelo' => 'Inspiron 15',
-                'orcamento_previo' => 350.00
-            ],
-            (object)[
-                'id' => 2,
-                'nome' => 'Ana Silva',
-                'sku' => '02',
-                'marca' => 'Samsung',
-                'modelo' => 'Galaxy S20',
-                'orcamento_previo' => 500.00
-            ],
-            (object)[
-                'id' => 3,
-                'nome' => 'João Souza',
-                'sku' => '03',
-                'marca' => 'HP',
-                'modelo' => 'Pavilion',
-                'orcamento_previo' => 120.00
-            ],
-        ]);
-
-        $orderservice = $items->firstWhere('id', (int) $id);
-
-        if (!$orderservice) {
-            abort(404, 'Ordem de serviço não encontrada.');
-        }
-
-        return view('order.show', compact('orderservice'));
+        $order = OrderService::with(['client', 'user', 'stockItems'])->findOrFail($id);
+        return view('order.show', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $items = collect([
-            (object)[
-                'id' => 1,
-                'nome' => 'Carlos Rocha',
-                'sku' => '01',
-                'marca' => 'Dell',
-                'modelo' => 'Inspiron 15',
-                'orcamento_previo' => 350.00
-            ],
-            (object)[
-                'id' => 2,
-                'nome' => 'Ana Silva',
-                'sku' => '02',
-                'marca' => 'Samsung',
-                'modelo' => 'Galaxy S20',
-                'orcamento_previo' => 500.00
-            ],
-            (object)[
-                'id' => 3,
-                'nome' => 'João Souza',
-                'sku' => '03',
-                'marca' => 'HP',
-                'modelo' => 'Pavilion',
-                'orcamento_previo' => 120.00
-            ],
-        ]);
+        $order = OrderService::with('stockItems')->findOrFail($id);
+        $clients = Client::all();
+        $users = User::all();
+        $stockItems = StockItem::where('quantity', '>', 0)->get();
 
-        $orderservice = $items->firstWhere('id', (int) $id);
-
-        if (!$orderservice) {
-            abort(404, 'Ordem de serviço não encontrada.');
+        $selectedItems = [];
+        foreach ($order->stockItems as $item) {
+            $selectedItems[$item->id] = [
+                'quantity' => $item->pivot->quantity,
+            ];
         }
 
-        return view('order.edit', compact('orderservice'));
+        return view('order.edit', compact('order', 'clients', 'users', 'stockItems', 'selectedItems'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        // Aqui você faria a validação e atualização no banco de dados
+        $order = OrderService::with('stockItems')->findOrFail($id);
+
+        $validated = $request->validate([
+            'client_id'   => 'required|exists:clients,id',
+            'user_id'     => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'status'      => 'required|in:pending,in_progress,approved,rejected,cancelled,completed',
+            'stock_items' => 'array',
+            'stock_items.*' => 'integer|exists:stock_items,id',
+            'quantities' => 'array',
+            'quantities.*' => 'integer|min:1',
+        ]);
+
+        DB::transaction(function () use ($order, $validated) {
+            // Repor o estoque dos itens antigos
+            foreach ($order->stockItems as $item) {
+                $item->increment('quantity', $item->pivot->quantity);
+            }
+
+            $order->update([
+                'client_id'   => $validated['client_id'],
+                'user_id'     => $validated['user_id'],
+                'description' => $validated['description'] ?? '',
+                'status'      => $validated['status'],
+            ]);
+
+            $order->stockItems()->detach();
+
+            $items_to_attach = [];
+
+            foreach ($validated['stock_items'] ?? [] as $stock_item_id) {
+                $quantity = $validated['quantities'][$stock_item_id] ?? 1;
+                $stock = StockItem::findOrFail($stock_item_id);
+
+                if ($stock->quantity < $quantity) {
+                    throw new Exception("Estoque insuficiente para o produto: {$stock->name}");
+                }
+
+                $items_to_attach[$stock_item_id] = ['quantity' => $quantity];
+                $stock->decrement('quantity', $quantity);
+            }
+
+            if (!empty($items_to_attach)) {
+                $order->stockItems()->attach($items_to_attach);
+            }
+        });
+
         return redirect()->route('orders.index')
             ->with('success', 'Ordem de serviço atualizada com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        // Aqui você faria a exclusão no banco de dados
+        $order = OrderService::with('stockItems')->findOrFail($id);
+
+        DB::transaction(function () use ($order) {
+            foreach ($order->stockItems as $item) {
+                $item->increment('quantity', $item->pivot->quantity);
+            }
+
+            $order->stockItems()->detach();
+            $order->delete();
+        });
+
         return redirect()->route('orders.index')
             ->with('success', 'Ordem de serviço excluída com sucesso!');
     }

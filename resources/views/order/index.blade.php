@@ -1,4 +1,4 @@
-<x-app-layout title="Listagem de Ordens de Serviço">
+<x-app-layout title="Listagem de Ordens de Serviço (OS)">
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 leading-tight">
@@ -9,7 +9,7 @@
                class="inline-flex justify-center rounded-md border border-gray-300
                       px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100
                       focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-gray-300 dark:hover:bg-gray-700">
-                Nova Ordem de Serviço
+                Nova OS
             </a>
         </div>
     </x-slot>
@@ -18,56 +18,40 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                {{-- Mapeamento dos status para português --}}
+                @php
+                    $status_pt = [
+                        'pending' => 'Pendente',
+                        'in_progress' => 'Em andamento',
+                        'approved' => 'Aprovado',
+                        'rejected' => 'Rejeitado',
+                        'cancelled' => 'Cancelado',
+                        'completed' => 'Concluído',
+                    ];
+                @endphp
+
                 {{-- Tabela --}}
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-100 dark:bg-gray-700" style="text-align: left">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Nome do Cliente
-                                </th>
-                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    SKU
-                                </th>
-                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Marca
-                                </th>
-                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Modelo
-                                </th>
-                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Orçamento Prévio
-                                </th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Ações
-                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cliente</th>
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Técnico</th>
+                                <th class="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ações</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse ($orderservices as $orderservice)
+                            @forelse ($orders as $order)
                                 <tr>
-                                    <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $orderservice->nome }}
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $orderservice->sku }}
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $orderservice->marca }}
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $orderservice->modelo }}
-                                    </td>
-                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        R$ {{ number_format($orderservice->orcamento_previo, 2, ',', '.') }}
+                                    <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $order->client->name }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $order->user->name }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 capitalize">
+                                        {{ $status_pt[$order->status] ?? ucfirst(str_replace('_', ' ', $order->status)) }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-center space-x-2">
-
-                                        <a href="{{ route('orders.show', $orderservice->id) }}" title="Visualizar"
-                                           class="inline-flex items-center p-1 text-blue-500 hover:text-blue-700">
-                                            {{-- Ícone Visualizar --}}
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor">
+                                        <a href="{{ route('orders.show', $order->id) }}" title="Visualizar" class="inline-flex items-center p-1 text-blue-500 hover:text-blue-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,22 +59,17 @@
                                             </svg>
                                         </a>
 
-                                        <a href="{{ route('orders.edit', $orderservice->id) }}" title="Editar"
-                                           class="inline-flex items-center p-1 text-yellow-500 hover:text-yellow-700">
-                                            {{-- Ícone Editar --}}
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                 viewBox="0 0 24 24" stroke="currentColor">
+                                        <a href="{{ route('orders.edit', $order->id) }}" title="Editar" class="inline-flex items-center p-1 text-yellow-500 hover:text-yellow-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M11 5h2m4.293 1.293a1 1 0 010 1.414l-8.5 8.5a1 1 0 01-.293.207L5 17l.586-3.5a1 1 0 01.207-.293l8.5-8.5a1 1 0 011.414 0z" />
                                             </svg>
                                         </a>
 
-                                        {{-- Form de exclusão --}}
-                                        <form method="POST" action="{{ route('orders.destroy', $orderservice->id) }}" class="inline delete-form">
+                                        <form method="POST" action="{{ route('orders.destroy', $order->id) }}" class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" title="Excluir"
-                                                    class="inline-flex items-center p-1 text-red-500 hover:text-red-700">
+                                            <button type="submit" title="Excluir" class="inline-flex items-center p-1 text-red-500 hover:text-red-700">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                      viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -98,12 +77,11 @@
                                                 </svg>
                                             </button>
                                         </form>
-
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
+                                    <td colspan="4" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
                                         Nenhuma ordem de serviço encontrada.
                                     </td>
                                 </tr>
@@ -113,21 +91,21 @@
                 </div>
 
                 <div class="mt-4">
-                    {{ $orderservices->links() }}
+                    {{ $orders->links() }}
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- SweetAlert2 -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Intercepta submit do form de deletar para mostrar confirmação SweetAlert2
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', function (e) {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Você tem certeza?',
-                        text: "Esta ação não pode ser desfeita!",
+                        text: 'Esta ação não pode ser desfeita!',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#4F46E5',
@@ -148,12 +126,7 @@
                     title: 'Sucesso!',
                     text: @json(session('success')),
                     timer: 2500,
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
-                    willClose: () => {
-                        Swal.close();
-                    }
+                    showConfirmButton: false
                 });
             @elseif(session('error'))
                 Swal.fire({
@@ -161,38 +134,9 @@
                     title: 'Erro!',
                     text: @json(session('error')),
                     timer: 2500,
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
-                    willClose: () => {
-                        Swal.close();
-                    }
+                    showConfirmButton: false
                 });
             @endif
-
-            // Função para sumir o alerta com fade out
-            function fadeOutEffect(element) {
-                let opacity = 1;
-                let timer = setInterval(function () {
-                    if (opacity <= 0.1) {
-                        clearInterval(timer);
-                        element.style.display = 'none';
-                    }
-                    element.style.opacity = opacity;
-                    opacity -= opacity * 0.1;
-                }, 50);
-            }
-
-            let alertSuccess = document.getElementById('alert-success');
-            if (alertSuccess) {
-                setTimeout(() => fadeOutEffect(alertSuccess), 2500);
-            }
-
-            let alertError = document.getElementById('alert-error');
-            if (alertError) {
-                setTimeout(() => fadeOutEffect(alertError), 2500);
-            }
         });
     </script>
-
 </x-app-layout>
