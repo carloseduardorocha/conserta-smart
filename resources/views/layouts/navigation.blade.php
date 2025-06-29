@@ -18,6 +18,21 @@
                     <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.*')">
                         {{ __('Clientes') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.*')">
+                        {{ __('Clientes') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
+                        {{ __('Ordens de serviço') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
+                        {{ __('Estoque') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('report.*')">
+                        {{ __('Relatório ') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('report.*')">
+                        {{ __('Admin') }}
+                    </x-nav-link>
                 </div>
             </div>
 

@@ -40,8 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('orders', OrderServiceController::class);
 
     Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/services', [ReportController::class, 'services'])->name('services');
-        Route::get('/stock', [ReportController::class, 'stock'])->name('stock');
+        Route::get('/', [ReportController::class, 'index'])->name('index');
     });
 });
 
