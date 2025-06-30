@@ -28,13 +28,12 @@ class StockController extends Controller
             'quantity'       => 'required|integer|min:0',
             'purchase_price' => 'required|string',
             'sale_price'     => 'required|string',
-            'supplier'       => 'nullable|string|max:255',
+            'supplier'       => 'required|string|max:255',
         ]);
 
-        // Converter string de preço formatado para float
-        $validated['purchase_price'] = floatval(str_replace([',', '.'], ['', '.'], str_replace('.', '', $validated['purchase_price'])));
-        $validated['sale_price'] = floatval(str_replace([',', '.'], ['', '.'], str_replace('.', '', $validated['sale_price'])));
-
+        $validated['purchase_price'] = floatval(str_replace(',', '.', $validated['purchase_price']));
+        $validated['sale_price']     = floatval(str_replace(',', '.', $validated['sale_price']));
+        
         StockItem::create($validated);
 
         return redirect()->route('stock.index')
@@ -65,12 +64,11 @@ class StockController extends Controller
             'quantity'       => 'required|integer|min:0',
             'purchase_price' => 'required|string',
             'sale_price'     => 'required|string',
-            'supplier'       => 'nullable|string|max:255',
+            'supplier'       => 'required|string|max:255',
         ]);
 
-        // Converter string de preço formatado para float
-        $validated['purchase_price'] = floatval(str_replace([',', '.'], ['', '.'], str_replace('.', '', $validated['purchase_price'])));
-        $validated['sale_price'] = floatval(str_replace([',', '.'], ['', '.'], str_replace('.', '', $validated['sale_price'])));
+        $validated['purchase_price'] = floatval(str_replace(',', '.', $validated['purchase_price']));
+        $validated['sale_price']     = floatval(str_replace(',', '.', $validated['sale_price']));
 
         $item->update($validated);
 

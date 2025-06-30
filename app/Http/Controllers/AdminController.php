@@ -61,6 +61,7 @@ class AdminController extends Controller
                 ->with('error', 'Você não pode excluir a si mesmo.');
         }
 
+        $user->orderServices()->forceDelete();
         $user->delete();
 
         return redirect()->route('admin.index')

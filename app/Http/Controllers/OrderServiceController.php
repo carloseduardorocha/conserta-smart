@@ -35,7 +35,7 @@ class OrderServiceController extends Controller
         $validated = $request->validate([
             'client_id'   => 'required|exists:clients,id',
             'user_id'     => 'required|exists:users,id',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'status'      => 'required|in:pending,in_progress,approved,rejected,cancelled,completed',
             'stock_items' => 'array',
             'stock_items.*' => 'integer|exists:stock_items,id',
@@ -104,7 +104,7 @@ class OrderServiceController extends Controller
         $validated = $request->validate([
             'client_id'   => 'required|exists:clients,id',
             'user_id'     => 'required|exists:users,id',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'status'      => 'required|in:pending,in_progress,approved,rejected,cancelled,completed',
             'stock_items' => 'array',
             'stock_items.*' => 'integer|exists:stock_items,id',
