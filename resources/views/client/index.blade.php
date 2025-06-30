@@ -35,7 +35,7 @@
                                     <td class="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ $client->name }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $client->email }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
-                                        {{ preg_replace('/(\+55)(\d{2})(\d{5})(\d{4})/', '+55 ($2) $3-$4', $client->phone) }}
+                                        {{ preg_replace('/^(55)(\d{2})(\d{5})(\d{4})$/', '+55 ($2) $3-$4', $client->phone) }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
                                         {{ preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $client->cpf) }}
