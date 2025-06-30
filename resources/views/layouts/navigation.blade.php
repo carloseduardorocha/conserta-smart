@@ -127,8 +127,8 @@
                 <x-responsive-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.*')">
                     {{ __('Estoque') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('report.*')">
-                    {{ __('Relatório') }}
+                <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
+                    {{ __('Relatórios') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.*')">
                     {{ __('Admin') }}

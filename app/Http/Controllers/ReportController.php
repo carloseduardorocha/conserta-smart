@@ -22,7 +22,7 @@ class ReportController extends Controller
 
         switch ($report) {
             case 'technicians':
-                $data = ['technicians' => User::where('type', 'technician')->get()];
+                $data = ['technicians' => User::get()];
                 $view = 'report.pdf.technicians';
                 break;
             case 'clients':
