@@ -22,12 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
-
-Route::get('/dashboard-old', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboardOld');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
